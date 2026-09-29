@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Jadual Penuh — SDA Koporingan</title>
+<title>Isi Roster — SDA Koporingan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -13,191 +13,226 @@
 @theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-secondary: var(--secondary); --color-secondary-foreground: var(--secondary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground); --color-card: var(--card); --color-border: var(--border); --color-destructive: var(--destructive); }
 :root { --background:#F1F5F9; --foreground:#172033; --primary:#1D4ED8; --primary-foreground:#fff; --secondary:#E2E8F0; --secondary-foreground:#334155; --muted:#CBD5E1; --muted-foreground:#64748B; --card:#F8FAFC; --border:#CBD5E1; --destructive:#DC2626; --radius:.5rem; --font-sans:"Inter"; --font-mono:"JetBrains Mono"; }
 *,*::before,*::after{scrollbar-width:none} *::-webkit-scrollbar{display:none}
-.sticky-col { position: sticky; left: 0; z-index: 5; }
-select.cell { max-width: 170px; }
-select.cell.dup { border-color: var(--destructive); background: #FEF2F2; color: #B91C1C; font-weight: 700; }
-select.cell.changed { border-color: var(--primary); background: #EFF6FF; }
-@media print { nav, #toolbar { display:none !important; } body { background:#fff; } select.cell { border:none; appearance:none; max-width:none; font-size:11px; } select.cell option:not(:checked){ display:none; } }
+.card-dup { border-color: var(--destructive) !important; background: #FEF2F2 !important; }
+select.big { font-size: 16px; padding: 12px; } /* elak zoom iOS + senang tekan */
+@media print { nav, #topbar, #btnSaveWrap { display:none !important; } }
 </style>
 </head>
 <body>
-<div class="min-h-screen bg-background text-foreground pb-24 font-sans">
-<header class="sticky top-0 z-20 border-b border-border bg-background/90 backdrop-blur-md">
-  <div class="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-4">
-    <div><h1 class="font-heading text-xl font-bold tracking-tight">Jadual Penuh — Satu Paparan</h1><p class="text-xs text-muted-foreground">Pagi 9.00–11.00 (biru) · Khotbah 11.00–12.30 (teal) · Semua Sabat 1–13</p></div>
-    <div class="flex items-center gap-2">
-      <button id="btnSave" class="rounded-md bg-primary px-4 py-2 text-xs font-bold text-white hover:opacity-90">Simpan Semua (<span id="chgCount">0</span>)</button>
-      <button id="btnPdf" class="flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold hover:bg-secondary"><iconify-icon icon="ph:export" class="text-primary" width="16" height="16"></iconify-icon><span>PDF</span></button>
+<div class="min-h-screen bg-background text-foreground pb-32 font-sans">
+<header class="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur-md">
+  <div class="mx-auto max-w-2xl px-4 py-3">
+    <h1 class="text-lg font-bold tracking-tight">Isi Roster</h1>
+    <p class="text-xs text-muted-foreground">Pilih Tarikh + Dept → isi slot anda → Simpan Sabat Ini</p>
+    <div class="mt-2 grid grid-cols-1 gap-2" id="topbar">
+      <label class="text-xs font-bold">1. Pilih Tarikh / Sabat
+        <select id="fTarikh" class="big mt-1 w-full rounded-lg border border-border bg-card font-semibold"></select>
+      </label>
+      <label class="text-xs font-bold">2. Pilih Dept Saya
+        <select id="fDept" class="big mt-1 w-full rounded-lg border border-border bg-card font-semibold"></select>
+      </label>
     </div>
   </div>
 </header>
 
-<main class="mx-auto max-w-[1400px] space-y-4 px-5 py-4">
-  <div class="flex flex-wrap items-center gap-2 rounded-md border border-border bg-card/60 px-3 py-2 text-xs text-muted-foreground" id="toolbar">
-    <span class="font-semibold text-foreground">Cara guna:</span>
-    <span>Lihat semua slot seperti Sheet → pilih nama → Simpan Semua. Merah = double (R1) pada Tarikh sama.</span>
-    <span class="ml-auto flex items-center gap-2">
-      <select id="fBulan" class="rounded-md border border-border bg-card px-2 py-1.5 text-xs font-medium"><option value="">Semua Bulan</option></select>
-      <input id="fCari" placeholder="Highlight nama…" class="rounded-md border border-border bg-card px-2 py-1.5 text-xs" />
-      <span id="saveMsg" class="font-semibold"></span>
-    </span>
-  </div>
-  <div class="flex flex-wrap items-center gap-4 rounded-md border border-border bg-card/60 px-3 py-2 text-xs text-muted-foreground">
-    <span class="font-semibold text-foreground">Legend:</span>
-    <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-primary"></span> Pagi</span>
-    <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-teal-700"></span> Khotbah</span>
-    <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-orange-500"></span> Diubah (biru muda)</span>
-    <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-destructive"></span> Double R1</span>
-  </div>
+<main class="mx-auto max-w-2xl space-y-5 px-4 py-4">
+  <div id="dupBanner" class="hidden rounded-lg border border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-700"></div>
 
-  <div class="overflow-auto rounded-lg border border-border bg-card" style="max-height:75vh">
-    <table class="border-collapse text-xs" id="fullTable" style="min-width:2600px">
-      <thead id="tHead" class="sticky top-0 z-10"></thead>
-      <tbody id="tBody" class="divide-y divide-border"></tbody>
-    </table>
-  </div>
-  <p class="text-xs text-muted-foreground">JURUTULIS 1/2 & DIAKON 1/2 ialah pair. Pengkhotbah terbuka semua. Selepas edit Code.gs di Apps Script, Deploy → New version supaya bulkUpdate aktif.</p>
+  <section>
+    <h2 class="mb-2 rounded-md bg-blue-700 px-3 py-2 text-sm font-bold text-white">Pagi 9.00–11.00</h2>
+    <div id="secPagi" class="space-y-3"></div>
+  </section>
+  <section>
+    <h2 class="mb-2 rounded-md bg-teal-700 px-3 py-2 text-sm font-bold text-white">Khotbah 11.00–12.30</h2>
+    <div id="secKhotbah" class="space-y-3"></div>
+  </section>
+
+  <section class="rounded-lg border border-border bg-card p-3">
+    <h3 class="text-sm font-bold">Slot lain sudah diisi (tarikh ini)</h3>
+    <p class="text-xs text-muted-foreground">Rujukan supaya tidak pilih nama sama. R1: satu nama 1x per Tarikh.</p>
+    <div id="takenList" class="mt-2 flex flex-wrap gap-1.5"></div>
+  </section>
+
+  <p class="text-center text-xs text-muted-foreground"><a href="jadual-pc.html" class="font-semibold text-primary underline">Buka paparan PC (jadual penuh)</a> · <a href="petugas.html" class="font-semibold text-primary underline">Tambah petugas baru</a></p>
 </main>
+
+<div id="btnSaveWrap" class="fixed inset-x-0 bottom-16 z-30 px-4">
+  <div class="mx-auto max-w-2xl">
+    <button id="btnSave" class="w-full rounded-xl bg-primary py-4 text-base font-bold text-white shadow-lg">Simpan Sabat Ini (<span id="chg">0</span> berubah)</button>
+    <p id="msg" class="mt-1 text-center text-xs font-semibold"></p>
+  </div>
+</div>
 
 <nav class="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 backdrop-blur-md">
   <div class="mx-auto flex max-w-2xl items-center justify-around px-2 py-2">
     <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-muted-foreground" href="index.html"><iconify-icon icon="ph:house" width="20" height="20"></iconify-icon><span class="text-[11px] font-medium">Laman</span></a>
-    <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-primary" href="jadual.html"><iconify-icon icon="ph:calendar-blank-fill" width="20" height="20"></iconify-icon><span class="text-[11px] font-semibold">Jadual</span></a>
+    <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-primary" href="jadual.html"><iconify-icon icon="ph:calendar-blank-fill" width="20" height="20"></iconify-icon><span class="text-[11px] font-semibold">Isi</span></a>
     <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-muted-foreground" href="petugas.html"><iconify-icon icon="ph:user-circle" width="20" height="20"></iconify-icon><span class="text-[11px] font-medium">Petugas</span></a>
   </div>
 </nav>
+
+<!-- Popup duplicate -->
+<div id="popDup" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-5">
+  <div class="w-full max-w-sm rounded-xl bg-white p-5 text-center">
+    <iconify-icon icon="ph:warning-circle-fill" width="40" height="40" class="text-red-600"></iconify-icon>
+    <h3 class="mt-2 font-bold">Nama sudah dipilih!</h3>
+    <p class="mt-1 text-sm" id="popMsg"></p>
+    <button id="popOk" class="mt-4 w-full rounded-lg bg-primary py-3 text-sm font-bold text-white">Pilih nama lain</button>
+  </div>
+</div>
 </div>
 <script src="assets/config.js"></script>
 <script src="assets/app.js"></script>
 <script>
 (function(){
   let DB=null, names=[];
-  const tHead=document.getElementById('tHead'), tBody=document.getElementById('tBody');
-  const fBulan=document.getElementById('fBulan'), fCari=document.getElementById('fCari');
-  const btnSave=document.getElementById('btnSave'), chgCount=document.getElementById('chgCount'), saveMsg=document.getElementById('saveMsg');
-  const dirty=new Map(); // key sheet|row|col -> {sheet,row,colName,value,iso,el}
-
-  const SHEET_PAGI='JADUAL KEBAKTIAN PAGI', SHEET_KHOT='JADUAL KHOTBAH';
+  const fTarikh=document.getElementById('fTarikh'), fDept=document.getElementById('fDept');
+  const secPagi=document.getElementById('secPagi'), secKhot=document.getElementById('secKhotbah');
+  const takenList=document.getElementById('takenList'), dupBanner=document.getElementById('dupBanner');
+  const btnSave=document.getElementById('btnSave'), msg=document.getElementById('msg');
+  const pop=document.getElementById('popDup'), popMsg=document.getElementById('popMsg');
+  document.getElementById('popOk').onclick=()=>{pop.classList.add('hidden');pop.classList.remove('flex');};
+  const dirty=new Map();
   const SKIP=['BULAN','TARIKH','SABAT','_rowIndex','_iso','_label'];
 
-  fBulan.onchange=render; fCari.oninput=highlight;
-  document.getElementById('btnPdf').onclick=()=>{
-    if(dirty.size && !confirm(dirty.size+' perubahan belum disimpan. Teruskan PDF?')) return;
-    let kosong=0;
-    document.querySelectorAll('select.cell').forEach(s=>{ if(!s.value) kosong++; });
-    if(kosong>0 && !confirm(kosong+' slot masih kosong. Teruskan PDF?')) return;
-    window.print();
-  };
-  btnSave.onclick=async ()=>{
-    if(!dirty.size) return;
-    // R1 final check
-    const blocks=currentDups();
-    if(blocks.length && !confirm(blocks.length+' double dikesan ('+blocks.slice(0,3).map(d=>d.nama).join(', ')+'). Teruskan simpan?')) return;
-    try{
-      btnSave.textContent='Menyimpan…'; saveMsg.textContent='';
-      const updates=[...dirty.values()].map(d=>({sheet:d.sheet,row:d.row,colName:d.colName,value:d.value}));
-      await window.JadualApp.apiPost({action:'bulkUpdate', updates});
-      saveMsg.textContent='Berjaya: '+updates.length+' disimpan.'; saveMsg.className='font-semibold text-green-700';
-      dirty.clear(); updateCount(); location.reload();
-    }catch(e){ saveMsg.textContent=e.message; saveMsg.className='font-semibold text-red-700'; }
-    finally{ btnSave.innerHTML='Simpan Semua (<span id="chgCount">'+dirty.size+'</span>)'; }
-  };
+  fTarikh.onchange=render; fDept.onchange=render;
+  btnSave.onclick=saveAll;
 
+  function allowedCols(){
+    const d=fDept.value, map=(window.APP_CONFIG.DEPTS||{})[d];
+    return map||null; // null = semua
+  }
   function roleCols(j){ return j.headers.filter(h=>!['BULAN','TARIKH','SABAT'].includes(h)); }
 
-  function currentValues(){
-    // baca nilai semasa semua select (termasuk dirty) per iso
-    const perIso={};
-    document.querySelectorAll('select.cell').forEach(s=>{
-      const iso=s.dataset.iso, v=s.value.trim();
-      if(!v) return;
-      (perIso[iso]=perIso[iso]||[]).push({nama:v, key:window.JadualApp.norm(v), el:s});
-    });
-    return perIso;
+  function showPop(nama, src){
+    popMsg.textContent = nama+' sudah bertugas di '+src+' pada tarikh ini. Sila pilih orang lain (R1).';
+    pop.classList.remove('hidden'); pop.classList.add('flex');
   }
-  function currentDups(){
-    const per=currentValues(), out=[];
-    Object.keys(per).forEach(iso=>{
-      const seen={};
-      per[iso].forEach(x=>{ if(seen[x.key]) out.push({iso, nama:x.nama}); else seen[x.key]=1; });
+
+  function takenMap(exceptEl){
+    // peta nama -> src untuk tarikh semasa (dari semua select semasa)
+    const m={};
+    document.querySelectorAll('select.slot').forEach(s=>{
+      const v=(s.value||'').trim(); if(!v) return;
+      if(exceptEl && s===exceptEl) return;
+      m[window.JadualApp.norm(v)] = s.dataset.label;
     });
-    return out;
+    // + nilai asal read-only (tetap dikira)
+    return m;
   }
-  function refreshDup(){
-    document.querySelectorAll('select.cell').forEach(s=>s.classList.remove('dup'));
-    const per=currentValues();
-    Object.keys(per).forEach(iso=>{
-      const cnt={};
-      per[iso].forEach(x=>{cnt[x.key]=(cnt[x.key]||0)+1;});
-      per[iso].forEach(x=>{ if(cnt[x.key]>1) x.el.classList.add('dup'); });
+
+  function refreshState(changedEl, newVal){
+    // popup jika duplicate
+    if(changedEl && newVal){
+      const m=takenMap(changedEl);
+      if(m[window.JadualApp.norm(newVal)]){
+        showPop(newVal, m[window.JadualApp.norm(newVal)]);
+      }
+    }
+    // tandakan dup + banner + taken chips
+    const seen={}, dups=[];
+    const all=[];
+    document.querySelectorAll('select.slot').forEach(s=>{
+      const v=(s.value||'').trim(); if(!v) return;
+      all.push({el:s, key:window.JadualApp.norm(v), nama:v, label:s.dataset.label});
     });
+    all.forEach(x=>{ seen[x.key]=seen[x.key]||[]; seen[x.key].push(x); });
+    Object.values(seen).forEach(g=>{ if(g.length>1) g.forEach(x=>dups.push(x)); });
+    document.querySelectorAll('.slotCard').forEach(c=>c.classList.remove('card-dup'));
+    dups.forEach(d=>d.el.closest('.slotCard').classList.add('card-dup'));
+    // badge pada option yang sudah diambil
+    const takenKeys=new Set(all.map(x=>x.key));
+    document.querySelectorAll('select.slot').forEach(s=>{
+      const cur=window.JadualApp.norm(s.value||'');
+      [...s.options].forEach(o=>{
+        if(!o.value) return;
+        const k=window.JadualApp.norm(o.value);
+        const used=takenKeys.has(k) && k!==cur;
+        o.textContent = used ? o.value+' ● Diambil' : o.value;
+      });
+    });
+    if(dups.length){
+      const names=[...new Set(dups.map(d=>d.nama))];
+      dupBanner.classList.remove('hidden');
+      dupBanner.textContent='Double (R1): '+names.slice(0,4).join(', ')+(names.length>4?' +lain':'')+' — betulkan sebelum Simpan.';
+    } else dupBanner.classList.add('hidden');
+    takenList.innerHTML = all.length ? all.map(x=>`<span class="rounded-full bg-secondary px-2 py-1 font-mono text-[11px]">${x.nama} <span class="text-muted-foreground">· ${x.label}</span></span>`).join('') : '<span class="text-xs text-muted-foreground">Belum ada diisi.</span>';
+    document.getElementById('chg').textContent=dirty.size;
   }
-  function updateCount(){ const el=document.getElementById('chgCount'); if(el) el.textContent=dirty.size; }
-  function highlight(){
-    const q=(fCari.value||'').toUpperCase();
-    document.querySelectorAll('select.cell').forEach(s=>{
-      s.style.outline = (q && (s.value||'').toUpperCase().includes(q)) ? '2px solid #1D4ED8' : '';
-    });
+
+  function mkCard(sheet, rowObj, col, val, editable){
+    const wrap=document.createElement('div');
+    wrap.className='slotCard rounded-lg border border-border bg-card p-3';
+    const short=col.replace(/_/g,' ');
+    if(!editable){
+      wrap.innerHTML=`<p class="text-xs font-bold uppercase text-muted-foreground">${short}</p>
+        <p class="mt-1 text-sm font-semibold">${val||'<span class="text-orange-600">— Kosong —</span>'}</p>`;
+      return wrap;
+    }
+    wrap.innerHTML=`<label class="text-xs font-bold uppercase">${short}</label>`;
+    const s=document.createElement('select');
+    s.className='slot big mt-1 w-full rounded-lg border border-border bg-white font-semibold';
+    s.dataset.sheet=sheet; s.dataset.row=rowObj._rowIndex; s.dataset.col=col; s.dataset.iso=rowObj._iso; s.dataset.label=short; s.dataset.orig=val||'';
+    s.innerHTML='<option value="">— Pilih —</option>'+names.map(n=>`<option ${n===val?'selected':''} value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+    if(!rowObj._rowIndex){ s.disabled=true; }
+    s.onchange=()=>{
+      const key=s.dataset.sheet+'|'+s.dataset.row+'|'+s.dataset.col;
+      if(s.value===(s.dataset.orig||'')){ dirty.delete(key); }
+      else dirty.set(key,{sheet:s.dataset.sheet,row:parseInt(s.dataset.row,10),colName:s.dataset.col,value:s.value});
+      refreshState(s, s.value);
+    };
+    wrap.appendChild(s);
+    return wrap;
   }
 
   function render(){
     if(!DB) return;
-    const colsP=roleCols(DB.pagi), colsK=roleCols(DB.khotbah);
-    // header 2 baris: group + col names
-    tHead.innerHTML=
-      `<tr class="text-xs font-bold uppercase">
-        <th rowspan="2" class="sticky-col bg-secondary/60 p-3 border-r border-border" style="min-width:130px">Tarikh / Sabat</th>
-        <th colspan="${colsP.length}" class="bg-blue-700 p-2 text-center text-white">Pagi 9.00–11.00</th>
-        <th colspan="${colsK.length}" class="bg-teal-700 p-2 text-center text-white">Khotbah 11.00–12.30</th>
-      </tr>
-      <tr class="bg-secondary/40 text-[10px] font-semibold uppercase text-muted-foreground">`+
-        colsP.map(c=>`<th class="border-l border-border p-2 whitespace-nowrap text-blue-800">${c.replace(/_/g,' ')}</th>`).join('')+
-        colsK.map(c=>`<th class="border-l border-border p-2 whitespace-nowrap text-teal-800">${c.replace(/_/g,' ')}</th>`).join('')+`</tr>`;
-    if(!fBulan.dataset.done){
-      [...new Set([...DB.pagi.rows, ...DB.khotbah.rows].map(r=>r.BULAN).filter(Boolean))].forEach(b=>{
-        const o=document.createElement('option'); o.value=b; o.textContent=b; fBulan.appendChild(o);
-      });
-      fBulan.dataset.done='1';
-    }
-    // index khotbah by iso
-    const kByIso={}; DB.khotbah.rows.forEach(r=>kByIso[r._iso]=r);
-    tBody.innerHTML='';
-    DB.pagi.rows.filter(r=>!fBulan.value||r.BULAN===fBulan.value).forEach(rp=>{
-      const rk=kByIso[rp._iso]||{};
-      const tr=document.createElement('tr');
-      tr.innerHTML=`<td class="sticky-col bg-card p-2 border-r border-border"><p class="font-mono text-[11px] font-bold">${rp._label}</p><p class="text-[10px] text-muted-foreground">Sabat ${rp.SABAT||''} · ${rp.BULAN||''}</p></td>`;
-      colsP.forEach(c=>tr.appendChild(mkCell(SHEET_PAGI, rp, c)));
-      colsK.forEach(c=>tr.appendChild(mkCell(SHEET_KHOT, rk._rowIndex?rk:{_rowIndex:rk._rowIndex||'',_iso:rp._iso}, c, rk[c]||'')));
-      tBody.appendChild(tr);
-    });
-    refreshDup(); highlight();
+    dirty.clear();
+    secPagi.innerHTML=''; secKhot.innerHTML='';
+    const iso=fTarikh.value;
+    const rp=DB.pagi.rows.find(r=>r._iso===iso), rk=DB.khotbah.rows.find(r=>r._iso===iso);
+    const allow=allowedCols();
+    const isAllow=(c)=>!allow||allow.includes(c);
+    roleCols(DB.pagi).forEach(c=>secPagi.appendChild(mkCard(window.APP_CONFIG.SHEET_PAGI, rp||{_iso:iso}, c, (rp||{})[c]||'', isAllow(c))));
+    roleCols(DB.khotbah).forEach(c=>secKhot.appendChild(mkCard(window.APP_CONFIG.SHEET_KHOTBAH, rk||{_iso:iso}, c, (rk||{})[c]||'', isAllow(c))));
+    refreshState();
   }
 
-  function mkCell(sheet, rowObj, col, forcedVal){
-    const td=document.createElement('td');
-    td.className='p-1 border-l border-border align-top';
-    const curVal = forcedVal!==undefined ? forcedVal : (rowObj[col]||'');
-    const s=document.createElement('select');
-    s.className='cell w-full rounded-md border border-border bg-white px-1.5 py-1.5 font-mono text-[11px]';
-    s.dataset.sheet=sheet; s.dataset.row=rowObj._rowIndex; s.dataset.col=col; s.dataset.iso=rowObj._iso; s.dataset.orig=curVal;
-    s.innerHTML='<option value="">—</option>'+names.map(n=>`<option ${n===curVal?'selected':''} value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
-    if(!rowObj._rowIndex){ s.disabled=true; s.title='Tiada baris Tarikh ini di '+sheet; }
-    s.onchange=()=>{
-      const key=s.dataset.sheet+'|'+s.dataset.row+'|'+s.dataset.col;
-      if(s.value===(s.dataset.orig||'')) { dirty.delete(key); s.classList.remove('changed'); }
-      else { dirty.set(key,{sheet:s.dataset.sheet,row:parseInt(s.dataset.row,10),colName:s.dataset.col,value:s.value,iso:s.dataset.iso}); s.classList.add('changed'); }
-      updateCount(); refreshDup(); highlight();
-    };
-    td.appendChild(s);
-    return td;
+  async function saveAll(){
+    if(!dirty.size){ msg.textContent='Tiada perubahan.'; return; }
+    // kira dup akhir
+    const seen={}, bad=[];
+    document.querySelectorAll('select.slot').forEach(s=>{
+      const v=(s.value||'').trim(); if(!v) return;
+      const k=window.JadualApp.norm(v);
+      if(seen[k]) bad.push(v); else seen[k]=1;
+    });
+    if(bad.length && !confirm('Double dikesan ('+[...new Set(bad)].join(', ')+'). Teruskan simpan?')) return;
+    try{
+      btnSave.textContent='Menyimpan…'; msg.textContent=''; msg.className='mt-1 text-center text-xs font-semibold';
+      const updates=[...dirty.values()].map(d=>({sheet:d.sheet,row:d.row,colName:d.colName,value:d.value}));
+      await window.JadualApp.apiPost({action:'bulkUpdate', updates});
+      msg.textContent='Berjaya disimpan ('+updates.length+').'; msg.classList.add('text-green-700');
+      dirty.clear(); location.reload();
+    }catch(e){ msg.textContent=e.message; msg.classList.add('text-red-700'); }
+    finally{ btnSave.innerHTML='Simpan Sabat Ini (<span id="chg">'+dirty.size+'</span> berubah)'; }
   }
 
   (async function(){
     try{
       DB=await window.JadualApp.loadDB();
       names=DB.petugas.filter(p=>(p.aktif||'').toUpperCase()==='Y').map(p=>p.nama).sort();
+      // tarikh options
+      const byIso={};
+      [...DB.pagi.rows, ...DB.khotbah.rows].forEach(r=>{ if(r._iso) byIso[r._iso]={iso:r._iso,label:r._label,sabat:r.SABAT}; });
+      const list=Object.values(byIso).sort((a,b)=>a.iso<b.iso?-1:1);
+      const today=new Date().toISOString().slice(0,10);
+      const def=(list.find(x=>x.iso>=today)||list[0]||{}).iso;
+      fTarikh.innerHTML=list.map(x=>`<option ${x.iso===def?'selected':''} value="${x.iso}">Sabat ${x.sabat||''} — ${x.label}</option>`).join('');
+      const depts=Object.keys(window.APP_CONFIG.DEPTS||{Semua:null});
+      fDept.innerHTML=depts.map(d=>`<option>${d}</option>`).join('');
       render();
-    }catch(e){ tBody.innerHTML='<tr><td class="p-4 text-red-700">'+e.message+'</td></tr>'; }
+    }catch(e){ msg.textContent='Gagal muat: '+e.message; }
   })();
 })();
 </script>

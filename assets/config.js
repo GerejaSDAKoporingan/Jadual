@@ -9,5 +9,15 @@ window.APP_CONFIG = {
   },
   // URL Web App dari Apps Script (Execute as: Me, Access: Anyone)
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbz-pJLZ_cDJVXIu3hQg7cXd42cK4Q0RRYEZPIIUEQnZsjYqq0s0T0JvhjK097I6Hj39Rw/exec",
-  YEAR_DEFAULT: 2026
+  YEAR_DEFAULT: 2026,
+  // Dept -> columns yang boleh diisi (nama header exact dari Sheet). Tukar ikut keperluan.
+  SHEET_PAGI: "JADUAL KEBAKTIAN PAGI",
+  SHEET_KHOTBAH: "JADUAL KHOTBAH",
+  DEPTS: {
+    "Semua": null,
+    "Pimpinan": ["PEMIMPIN NYANYI & PENUTUP S.SABAT, DOA PENUTUP", "PEMIMPIN ACARA & DOA PEMBUKA", "PEMIMPIN ACARA", "DOA PERSEMBAHAN & PERSEPULUHAN", "DOA PEMBUKA"],
+    "Muzik": ["PIANISIT", "MEDIA", "PIANIST"],
+    "Firman & Misi": ["CERITA MISI", "BACAAN KELUARGA & KESIHATAN", "BACAAN LAPORAN", "PENGKHOTBAH", "PERSEMBAHAN ISTIMEWA"],
+    "Diakon & Jurutulis": ["JURUTULIS 1", "JURUTULIS 2", "DIAKON 1 / DIAKONES 1", "DIAKON 2 / DIAKONES 2"]
+  }
 };
