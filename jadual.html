@@ -85,7 +85,9 @@ select.big { font-size: 16px; padding: 12px; } /* elak zoom iOS + senang tekan *
 <script src="assets/app.js"></script>
 <script>
 (function(){
-  let DB=null, names=[];
+  let DB=null, people=[];
+  const perananOf=(nama)=>{ const p=people.find(x=>window.JadualApp.norm(x.nama)===window.JadualApp.norm(nama)); return p&&p.peranan?p.peranan:''; };
+  const optLabel=(nama)=>{ const r=perananOf(nama); return r?nama+' — '+r:nama; };
   const fTarikh=document.getElementById('fTarikh'), fDept=document.getElementById('fDept');
   const secPagi=document.getElementById('secPagi'), secKhot=document.getElementById('secKhotbah');
   const takenList=document.getElementById('takenList'), dupBanner=document.getElementById('dupBanner');
@@ -140,15 +142,16 @@ select.big { font-size: 16px; padding: 12px; } /* elak zoom iOS + senang tekan *
     Object.values(seen).forEach(g=>{ if(g.length>1) g.forEach(x=>dups.push(x)); });
     document.querySelectorAll('.slotCard').forEach(c=>c.classList.remove('card-dup'));
     dups.forEach(d=>d.el.closest('.slotCard').classList.add('card-dup'));
-    // badge pada option yang sudah diambil
+    // badge pada option yang sudah diambil (kekalkan label jawatan)
     const takenKeys=new Set(all.map(x=>x.key));
     document.querySelectorAll('select.slot').forEach(s=>{
       const cur=window.JadualApp.norm(s.value||'');
       [...s.options].forEach(o=>{
         if(!o.value) return;
         const k=window.JadualApp.norm(o.value);
+        const base=o.dataset.base||optLabel(o.value); o.dataset.base=base;
         const used=takenKeys.has(k) && k!==cur;
-        o.textContent = used ? o.value+' ● Diambil' : o.value;
+        o.textContent = used ? base+' ● Diambil' : base;
       });
     });
     if(dups.length){
@@ -156,7 +159,7 @@ select.big { font-size: 16px; padding: 12px; } /* elak zoom iOS + senang tekan *
       dupBanner.classList.remove('hidden');
       dupBanner.textContent='Double (R1): '+names.slice(0,4).join(', ')+(names.length>4?' +lain':'')+' — betulkan sebelum Simpan.';
     } else dupBanner.classList.add('hidden');
-    takenList.innerHTML = all.length ? all.map(x=>`<span class="rounded-full bg-secondary px-2 py-1 font-mono text-[11px]">${x.nama} <span class="text-muted-foreground">· ${x.label}</span></span>`).join('') : '<span class="text-xs text-muted-foreground">Belum ada diisi.</span>';
+    takenList.innerHTML = all.length ? all.map(x=>{ const r=perananOf(x.nama); return `<span class="rounded-full bg-secondary px-2 py-1 font-mono text-[11px]">${x.nama}${r?' · '+r:''} <span class="text-muted-foreground">· ${x.label}</span></span>`; }).join('') : '<span class="text-xs text-muted-foreground">Belum ada diisi.</span>';
     document.getElementById('chg').textContent=dirty.size;
   }
 
@@ -173,7 +176,7 @@ select.big { font-size: 16px; padding: 12px; } /* elak zoom iOS + senang tekan *
     const s=document.createElement('select');
     s.className='slot big mt-1 w-full rounded-lg border border-border bg-white font-semibold';
     s.dataset.sheet=sheet; s.dataset.row=rowObj._rowIndex; s.dataset.col=col; s.dataset.iso=rowObj._iso; s.dataset.label=short; s.dataset.orig=val||'';
-    s.innerHTML='<option value="">— Pilih —</option>'+names.map(n=>`<option ${n===val?'selected':''} value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+    s.innerHTML='<option value="">— Pilih —</option>'+people.map(p=>`<option ${p.nama===val?'selected':''} value="${p.nama.replace(/"/g,'&quot;')}" data-base="${optLabel(p.nama).replace(/"/g,'&quot;')}">${optLabel(p.nama)}</option>`).join('');
     if(!rowObj._rowIndex){ s.disabled=true; }
     s.onchange=()=>{
       const key=s.dataset.sheet+'|'+s.dataset.row+'|'+s.dataset.col;
@@ -221,7 +224,7 @@ select.big { font-size: 16px; padding: 12px; } /* elak zoom iOS + senang tekan *
   (async function(){
     try{
       DB=await window.JadualApp.loadDB();
-      names=DB.petugas.filter(p=>(p.aktif||'').toUpperCase()==='Y').map(p=>p.nama).sort();
+      people=DB.petugas.filter(p=>(p.aktif||'').toUpperCase()==='Y').map(p=>({nama:p.nama, peranan:(p.peranan||'').trim()})).sort((a,b)=>a.nama<b.nama?-1:1);
       // tarikh options
       const byIso={};
       [...DB.pagi.rows, ...DB.khotbah.rows].forEach(r=>{ if(r._iso) byIso[r._iso]={iso:r._iso,label:r._label,sabat:r.SABAT}; });
