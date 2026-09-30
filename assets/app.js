@@ -136,6 +136,74 @@
     return j;
   }
 
+  // Helpers revamp: nama saya (localStorage), senarai sabat, progress dept
+  const SKIP = ["BULAN", "TARIKH", "SABAT", "_rowIndex", "_iso", "_label"];
+  function roleCols(j) { return (j.headers || []).filter(h => !["BULAN", "TARIKH", "SABAT"].includes(h)); }
+  function getMyName() { try { return localStorage.getItem("sda_myname") || ""; } catch (e) { return ""; } }
+  function setMyName(n) { try { localStorage.setItem("sda_myname", n || ""); } catch (e) {} }
+  function sabatList(db) {
+    const byIso = {};
+    db.pagi.rows.forEach(r => { if (r._iso) byIso[r._iso] = byIso[r._iso] || { iso: r._iso, label: r._label, sabat: r.SABAT, bulan: r.BULAN, pagi: r, khotbah: null }; });
+    db.khotbah.rows.forEach(r => { if (!r._iso) return; byIso[r._iso] = byIso[r._iso] || { iso: r._iso, label: r._label, sabat: r.SABAT, bulan: r.BULAN, pagi: null }; byIso[r._iso].khotbah = r; if (!byIso[r._iso].pagi) { byIso[r._iso].label = r._label; byIso[r._iso].sabat = r.SABAT; } });
+    return Object.values(byIso).filter(x => x.iso).sort((a, b) => a.iso < b.iso ? -1 : 1);
+  }
+  function slotStats(db, iso) {
+    // jumlah slot, diisi, kosong, double
+    let total = 0, filled = 0;
+    const seen = {}, dups = [];
+    const count = (rows) => {
+      rows.filter(r => r._iso === iso).forEach(r => {
+        Object.keys(r).forEach(k => {
+          if (SKIP.includes(k)) return;
+          total++;
+          const v = (r[k] || "").trim();
+          if (v) {
+            filled++;
+            v.split("&").map(s => s.trim()).filter(Boolean).forEach(n => {
+              const key = norm(n);
+              if (seen[key]) dups.push(n); else seen[key] = 1;
+            });
+          }
+        });
+      });
+    };
+    count(db.pagi.rows); count(db.khotbah.rows);
+    return { total, filled, empty: total - filled, dups: [...new Set(dups)] };
+  }
+  function deptStats(db, iso, deptCols) {
+    // deptCols: null = semua
+    let total = 0, filled = 0;
+    const check = (rows) => {
+      rows.filter(r => r._iso === iso).forEach(r => {
+        Object.keys(r).forEach(k => {
+          if (SKIP.includes(k)) return;
+          if (deptCols && !deptCols.includes(k)) return;
+          total++;
+          if ((r[k] || "").trim()) filled++;
+        });
+      });
+    };
+    check(db.pagi.rows); check(db.khotbah.rows);
+    return { total, filled, empty: total - filled };
+  }
+  function myDuties(db, nama) {
+    const key = norm(nama);
+    if (!key) return [];
+    const out = [];
+    const scan = (rows, src) => {
+      rows.forEach(r => {
+        Object.keys(r).forEach(k => {
+          if (SKIP.includes(k)) return;
+          (r[k] || "").split("&").map(s => s.trim()).filter(Boolean).forEach(n => {
+            if (norm(n) === key) out.push({ iso: r._iso, label: r._label, sabat: r.SABAT, role: k, src });
+          });
+        });
+      });
+    };
+    scan(db.pagi.rows, "Pagi"); scan(db.khotbah.rows, "Khotbah");
+    return out.sort((a, b) => a.iso < b.iso ? -1 : 1);
+  }
+
   // Expose
-  window.JadualApp = { loadDB, parseTarikh, namesOnDate, findDuplicate, apiPost, norm, csvUrl };
+  window.JadualApp = { loadDB, parseTarikh, namesOnDate, findDuplicate, apiPost, norm, csvUrl, roleCols, getMyName, setMyName, sabatList, slotStats, deptStats, myDuties };
 })();

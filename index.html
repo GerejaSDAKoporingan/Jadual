@@ -3,109 +3,70 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Laman Utama — Jadual Gereja SDA Koporingan</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<title>Laman — Jadual SDA Koporingan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 <style type="text/tailwindcss">
-@theme inline {
-  --color-background: var(--background); --color-foreground: var(--foreground);
-  --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary); --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent); --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive); --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground); --color-border: var(--border);
-}
-:root {
-  --background: #F1F5F9; --foreground: #172033; --primary: #1D4ED8; --primary-foreground: #FFFFFF;
-  --secondary: #E2E8F0; --secondary-foreground: #334155; --muted: #CBD5E1;
-  --muted-foreground: #64748B; --accent: #0F766E; --accent-foreground: #FFFFFF;
-  --destructive: #DC2626; --card: #F8FAFC; --card-foreground: #172033;
-  --border: #CBD5E1; --radius: 0.5rem;
-  --font-sans: "Inter"; --font-heading: "Inter"; --font-serif: "Playfair Display"; --font-mono: "JetBrains Mono";
-}
-*,*::before,*::after{scrollbar-width:none;-ms-overflow-style:none} *::-webkit-scrollbar{display:none}
+@theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-secondary: var(--secondary); --color-secondary-foreground: var(--secondary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground); --color-card: var(--card); --color-border: var(--border); }
+:root { --background:#F1F5F9; --foreground:#172033; --primary:#1D4ED8; --primary-foreground:#fff; --secondary:#E2E8F0; --secondary-foreground:#334155; --muted:#CBD5E1; --muted-foreground:#64748B; --card:#F8FAFC; --border:#CBD5E1; --radius:.5rem; --font-sans:"Inter"; --font-mono:"JetBrains Mono"; }
+*,*::before,*::after{scrollbar-width:none} *::-webkit-scrollbar{display:none}
+.bar { height: 8px; border-radius: 99px; background: #E2E8F0; overflow: hidden; }
+.bar > div { height: 100%; background: #1D4ED8; }
+.dot { width:10px; height:10px; border-radius:99px; display:inline-block; }
 </style>
 </head>
 <body>
 <div class="min-h-screen bg-background text-foreground pb-24 font-sans">
-<header class="sticky top-0 z-20 border-b border-border bg-background/90 backdrop-blur-md">
-  <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-    <div class="flex items-center gap-3">
-      <img src="assets/logo.png" alt="SDA" class="size-10 rounded-full bg-white object-contain ring-1 ring-border" />
-      <div>
-        <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Gereja SDA Koporingan</p>
-        <h1 class="font-heading text-lg font-bold tracking-tight">Selamat Sabat</h1>
-      </div>
-    </div>
-    <a href="petugas.html" class="flex size-10 items-center justify-center rounded-md border border-border bg-card" aria-label="Petugas">
-      <iconify-icon icon="ph:bell" width="20" height="20"></iconify-icon>
-    </a>
+<header class="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur-md">
+  <div class="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
+    <img src="assets/logo.png" alt="SDA" class="size-10 rounded-full bg-white object-contain ring-1 ring-border" />
+    <div class="flex-1"><p class="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Gereja SDA Koporingan</p>
+    <h1 class="text-lg font-bold tracking-tight">Jadual Roster</h1></div>
   </div>
 </header>
 
-<main class="mx-auto max-w-6xl space-y-5 px-5 py-5">
-  <section class="rounded-lg border border-border bg-card" id="heroCard">
-    <div class="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
-      <div>
-        <div class="mb-2 flex items-center gap-2">
-          <span class="size-2 rounded-full bg-green-600"></span>
-          <span class="text-xs font-semibold uppercase tracking-wider text-green-700">Bertugas Sabat ini</span>
-        </div>
-        <h2 class="font-heading text-2xl font-bold tracking-tight" id="heroTitle">Memuat…</h2>
-        <p class="mt-1 text-sm text-muted-foreground" id="heroSub">Sila tunggu</p>
-      </div>
-      <span class="rounded-md bg-secondary px-2.5 py-1 text-xs font-semibold text-secondary-foreground" id="heroBadge">—</span>
-    </div>
-    <div class="grid grid-cols-2 divide-x divide-border sm:grid-cols-3">
-      <div class="px-5 py-4"><p class="text-xs uppercase tracking-wide text-muted-foreground">Pagi (9-11)</p><p class="mt-1 text-sm font-semibold" id="heroPagi">—</p></div>
-      <div class="px-5 py-4"><p class="text-xs uppercase tracking-wide text-muted-foreground">Khotbah (11-12.30)</p><p class="mt-1 text-sm font-semibold" id="heroKhotbah">—</p></div>
-      <div class="col-span-2 border-t border-border px-5 py-4 sm:col-span-1 sm:border-t-0"><p class="text-xs uppercase tracking-wide text-muted-foreground">Petugas aktif</p><p class="mt-1 font-mono text-base font-semibold" id="heroCount">—</p></div>
+<main class="mx-auto max-w-2xl space-y-4 px-4 py-4">
+  <section class="rounded-xl border border-border bg-card p-4">
+    <div class="flex items-center gap-2"><span class="dot bg-green-600"></span><span class="text-xs font-bold uppercase text-green-700">Sabat Berikutnya</span>
+      <span id="cd" class="ml-auto font-mono text-xs font-bold text-primary"></span></div>
+    <h2 id="heroTitle" class="mt-1 text-2xl font-bold">Memuat…</h2>
+    <p id="heroSub" class="text-sm text-muted-foreground"></p>
+    <div class="mt-3"><div class="flex justify-between text-xs font-semibold"><span id="pctTxt">—</span><span id="slotTxt"></span></div>
+      <div class="bar mt-1"><div id="pctBar" style="width:0%"></div></div></div>
+    <div class="mt-3 grid grid-cols-2 gap-2">
+      <a id="btnIsi" href="jadual.html" class="rounded-xl bg-primary py-3 text-center text-sm font-bold text-white">Isi Roster →</a>
+      <a href="jadual.html?view=semak" class="rounded-xl border border-border py-3 text-center text-sm font-bold">Semak / PDF</a>
     </div>
   </section>
 
-  <div class="grid gap-5 lg:grid-cols-[1fr_320px]">
-    <section class="space-y-5">
-      <div class="flex items-center justify-between">
-        <h2 class="font-heading text-xl font-bold">Sabat akan datang</h2>
-        <a href="jadual.html" class="text-sm font-semibold text-primary">Lihat jadual <iconify-icon icon="ph:arrow-right" class="ml-1 inline" width="16" height="16"></iconify-icon></a>
-      </div>
-      <div class="overflow-hidden rounded-lg border border-border bg-card" id="upcoming"></div>
-      <section class="rounded-lg border border-primary/20 bg-primary/5 p-4">
-        <div class="flex gap-3">
-          <iconify-icon icon="ph:megaphone" class="mt-0.5 text-primary" width="20" height="20"></iconify-icon>
-          <div><p class="text-xs font-semibold uppercase tracking-wide text-primary">Pengumuman</p>
-          <p class="mt-1 text-sm font-semibold">Lengkapkan semua slot sebelum Jana PDF</p>
-          <p class="mt-1 text-sm text-muted-foreground">Setiap department isi bahagian masing-masing. Satu nama tidak boleh bertugas 2 kali pada Tarikh yang sama (Pagi + Khotbah).</p></div>
-        </div>
-      </section>
-    </section>
-    <aside class="space-y-5">
-      <section class="rounded-lg border border-border bg-card p-4">
-        <div class="mb-3 flex items-center justify-between"><h2 class="font-heading font-bold">Tindakan pantas</h2><iconify-icon icon="ph:lightning" class="text-primary" width="20" height="20"></iconify-icon></div>
-        <div class="grid gap-2">
-          <a href="jadual.html" class="flex items-center justify-between rounded-md bg-primary px-3.5 py-3 text-left text-sm font-semibold text-primary-foreground">Isi roster <iconify-icon icon="ph:arrow-up-right" width="16" height="16"></iconify-icon></a>
-          <a href="petugas.html" class="flex items-center justify-between rounded-md border border-border px-3.5 py-3 text-left text-sm font-semibold">Tambah petugas <iconify-icon icon="ph:plus-bold" class="text-primary" width="16" height="16"></iconify-icon></a>
-        </div>
-      </section>
-      <section class="rounded-lg border border-border bg-card p-4">
-        <div class="mb-3 flex items-center justify-between"><h2 class="font-heading font-bold">Perlu perhatian</h2><span class="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-bold text-orange-700" id="attCount">0</span></div>
-        <div class="space-y-3" id="attention"></div>
-        <a href="jadual.html" class="mt-4 block w-full border-t border-border pt-3 text-left text-sm font-semibold text-primary">Semak jadual <iconify-icon icon="ph:arrow-right" class="ml-1 inline" width="16" height="16"></iconify-icon></a>
-      </section>
-    </aside>
-  </div>
+  <section class="rounded-xl border border-border bg-card p-4">
+    <h3 class="text-sm font-bold">Nama saya (ingat di phone ini)</h3>
+    <p class="text-xs text-muted-foreground">Untuk papar <i>Tugas Saya</i> di bawah.</p>
+    <div class="mt-2 flex gap-2">
+      <select id="myName" class="w-full rounded-lg border border-border bg-white px-3 py-3 text-base font-semibold"></select>
+      <button id="myClear" class="rounded-lg border border-border px-3 text-xs font-bold">Padam</button>
+    </div>
+    <div id="myDuties" class="mt-3 space-y-2"></div>
+  </section>
+
+  <section class="rounded-xl border border-border bg-card p-4">
+    <div class="flex items-center justify-between"><h3 class="text-sm font-bold">Progress Dept — Sabat berikutnya</h3><span id="attN" class="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-bold text-orange-700"></span></div>
+    <div id="deptBars" class="mt-2 space-y-2"></div>
+  </section>
+
+  <section class="rounded-xl border border-border bg-card p-4">
+    <div class="flex items-center justify-between"><h3 class="text-sm font-bold">Semua Sabat</h3><a href="jadual.html" class="text-xs font-bold text-primary">Isi →</a></div>
+    <div id="sabatList" class="mt-2 space-y-2"></div>
+  </section>
 </main>
 
 <nav class="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 backdrop-blur-md">
   <div class="mx-auto flex max-w-2xl items-center justify-around px-2 py-2">
     <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-primary" href="index.html"><iconify-icon icon="ph:house-fill" width="20" height="20"></iconify-icon><span class="text-[11px] font-semibold">Laman</span></a>
-    <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-muted-foreground" href="jadual.html"><iconify-icon icon="ph:calendar-blank" width="20" height="20"></iconify-icon><span class="text-[11px] font-medium">Jadual</span></a>
+    <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-muted-foreground" href="jadual.html"><iconify-icon icon="ph:calendar-blank" width="20" height="20"></iconify-icon><span class="text-[11px] font-medium">Isi</span></a>
     <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-muted-foreground" href="petugas.html"><iconify-icon icon="ph:user-circle" width="20" height="20"></iconify-icon><span class="text-[11px] font-medium">Petugas</span></a>
   </div>
 </nav>
@@ -113,61 +74,68 @@
 <script src="assets/config.js"></script>
 <script src="assets/app.js"></script>
 <script>
-(async function(){
-  const box = document.getElementById('upcoming');
-  try {
-    const db = await window.JadualApp.loadDB();
-    const aktif = db.petugas.filter(p => (p.aktif||'').toUpperCase()==='Y');
-    document.getElementById('heroCount').textContent = aktif.length + ' orang';
-    // susun ikut tarikh
-    const all = [...db.pagi.rows.map(r=>({...r,_src:'Pagi'})), ...db.khotbah.rows.map(r=>({...r,_src:'Khotbah'}))];
-    const byIso = {};
-    db.pagi.rows.forEach(r=>{ (byIso[r._iso]=byIso[r._iso]||{iso:r._iso,label:r._label,sabat:r.SABAT,pagi:r,khotbah:null}); });
-    db.khotbah.rows.forEach(r=>{ (byIso[r._iso]=byIso[r._iso]||{iso:r._iso,label:r._label,sabat:r.SABAT,pagi:null}); byIso[r._iso].khotbah=r; });
-    const list = Object.values(byIso).filter(x=>x.iso).sort((a,b)=>a.iso<b.iso?-1:1);
+(function(){
+  const J = window.JadualApp;
+  async function main(){
+    const db = await J.loadDB();
+    const names = db.petugas.filter(p=>(p.aktif||'').toUpperCase()==='Y');
+    const list = J.sabatList(db);
     const today = new Date().toISOString().slice(0,10);
     const next = list.find(x=>x.iso>=today) || list[0];
+    // hero
     if(next){
-      document.getElementById('heroTitle').textContent = 'Sabat ' + (next.sabat||'') + ' — ' + next.label;
-      document.getElementById('heroSub').textContent = next.label + ' · Pagi 9.00-11.00 · Khotbah 11.00-12.30';
-      const cP = next.pagi ? Object.keys(next.pagi).filter(k=>!['BULAN','TARIKH','SABAT','_rowIndex','_iso','_label'].includes(k)&&next.pagi[k]).length : 0;
-      const cK = next.khotbah ? Object.keys(next.khotbah).filter(k=>!['BULAN','TARIKH','SABAT','_rowIndex','_iso','_label'].includes(k)&&next.khotbah[k]).length : 0;
-      document.getElementById('heroPagi').textContent = cP + ' slot diisi';
-      document.getElementById('heroKhotbah').textContent = cK + ' slot diisi';
-      document.getElementById('heroBadge').textContent = (cP+cK) > 0 ? 'Separa / Penuh' : 'Kosong';
-    }
-    box.innerHTML = list.slice(0,4).map((x,i)=>{
-      const color = i===0?'border-primary':(i===1?'border-accent':'border-orange-500');
-      return `<div class="flex items-center gap-4 border-l-4 ${color} border-b border-border px-4 py-3.5">
-        <div class="w-16 shrink-0"><p class="text-xs font-semibold uppercase text-muted-foreground">Sabat ${x.sabat||''}</p><p class="font-heading text-sm font-bold">${x.label}</p></div>
-        <div class="flex-1"><p class="font-semibold">Pagi + Khotbah</p><p class="mt-0.5 font-mono text-xs tabular-nums text-muted-foreground">${x.label} · 9.00am – 12.30pm</p></div>
-        <a href="jadual.html" class="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground">Buka</a></div>`;
-    }).join('') || '<p class="p-4 text-sm">Tiada data.</p>';
-
-    // perhatian: kosong + double
-    let kosong = 0, konflik = [];
-    list.forEach(x=>{
-      ['pagi','khotbah'].forEach(src=>{
-        const r = x[src]; if(!r) return;
-        Object.keys(r).forEach(k=>{
-          if(['BULAN','TARIKH','SABAT','_rowIndex','_iso','_label'].includes(k)) return;
-          if(!r[k]) kosong++;
-        });
+      const st = J.slotStats(db, next.iso);
+      const pct = st.total?Math.round(st.filled/st.total*100):0;
+      document.getElementById('heroTitle').textContent = 'Sabat '+next.sabat+' — '+next.label;
+      document.getElementById('heroSub').textContent = 'Pagi 9.00–11.00 · Khotbah 11.00–12.30';
+      document.getElementById('pctBar').style.width = pct+'%';
+      document.getElementById('pctTxt').textContent = pct+'% lengkap';
+      document.getElementById('slotTxt').textContent = st.filled+'/'+st.total+' slot';
+      document.getElementById('btnIsi').href = 'jadual.html?iso='+next.iso;
+      // countdown hari
+      const diff = Math.ceil((new Date(next.iso)-new Date(today))/86400000);
+      document.getElementById('cd').textContent = diff<=0?'Hari ini':diff+' hari lagi';
+      // dept bars
+      const depts = window.APP_CONFIG.DEPTS||{};
+      const box = document.getElementById('deptBars'); box.innerHTML='';
+      let att = 0;
+      Object.keys(depts).filter(d=>d!=='Semua').forEach(d=>{
+        const s = J.deptStats(db, next.iso, depts[d]);
+        const p = s.total?Math.round(s.filled/s.total*100):100;
+        if(s.empty>0) att++;
+        box.innerHTML += `<a href="jadual.html?iso=${next.iso}&dept=${encodeURIComponent(d)}" class="block rounded-lg border border-border p-2.5">
+          <div class="flex justify-between text-xs font-bold"><span>${d}</span><span>${s.filled}/${s.total}</span></div>
+          <div class="bar mt-1"><div style="width:${p}%;${s.empty?'':'background:#16A34A'}"></div></div></a>`;
       });
-      const seen = {}, rows = [x.pagi, x.khotbah].filter(Boolean);
-      rows.forEach(r=>{ Object.keys(r).forEach(k=>{
-        if(['BULAN','TARIKH','SABAT','_rowIndex','_iso','_label'].includes(k)) return;
-        (r[k]||'').split('&').map(s=>s.trim()).filter(Boolean).forEach(n=>{
-          const key = window.JadualApp.norm(n);
-          if(seen[key]) konflik.push(n+' ('+x.label+')'); else seen[key]=1;
-        });
-      });});
-    });
-    document.getElementById('attCount').textContent = (kosong>0?1:0)+(konflik.length>0?1:0);
-    document.getElementById('attention').innerHTML =
-      `<div class="flex gap-3"><span class="mt-1 size-2 shrink-0 rounded-full bg-orange-500"></span><div><p class="text-sm font-semibold">${kosong} slot kosong</p><p class="mt-0.5 text-xs text-muted-foreground">Lengkapkan sebelum Jana PDF</p></div></div>`+
-      (konflik.length?`<div class="flex gap-3"><span class="mt-1 size-2 shrink-0 rounded-full bg-red-600"></span><div><p class="text-sm font-semibold">Double dikesan: ${konflik.slice(0,3).join(', ')}</p><p class="mt-0.5 text-xs text-muted-foreground">Satu nama 2 kali sama Tarikh</p></div></div>`:`<div class="flex gap-3"><span class="mt-1 size-2 shrink-0 rounded-full bg-green-600"></span><div><p class="text-sm font-semibold">Tiada double</p><p class="mt-0.5 text-xs text-muted-foreground">R1 OK</p></div></div>`);
-  } catch(e){ box.innerHTML = '<p class="p-4 text-sm text-red-700">Gagal muat DB: '+e.message+'</p>'; }
+      document.getElementById('attN').textContent = att?att+' dept belum penuh':'Semua penuh ✓';
+    }
+    // my name
+    const sel = document.getElementById('myName');
+    const saved = J.getMyName();
+    sel.innerHTML = '<option value="">— Pilih nama saya —</option>'+names.map(p=>{const r=(p.peranan||'').trim();return `<option ${p.nama===saved?'selected':''} value="${p.nama.replace(/"/g,'&quot;')}">${p.nama}${r?' — '+r:''}</option>`;}).join('');
+    const renderMine = ()=>{
+      const box = document.getElementById('myDuties');
+      const ds = J.myDuties(db, sel.value);
+      box.innerHTML = !sel.value ? '<p class="text-xs text-muted-foreground">Pilih nama untuk lihat tugas anda.</p>'
+        : ds.length ? ds.slice(0,6).map(d=>`<div class="flex justify-between rounded-lg bg-secondary/60 px-3 py-2 text-xs"><span class="font-bold">${d.label}</span><span>${d.src} · ${d.role.replace(/_/g,' ')}</span></div>`).join('')+'<p class="text-xs text-muted-foreground">'+ds.length+' tugas keseluruhan.</p>'
+        : '<p class="text-xs text-muted-foreground">Tiada tugas untuk anda setakat ini.</p>';
+    };
+    sel.onchange = ()=>{ J.setMyName(sel.value); renderMine(); };
+    document.getElementById('myClear').onclick = ()=>{ sel.value=''; J.setMyName(''); renderMine(); };
+    renderMine();
+    // sabat list
+    document.getElementById('sabatList').innerHTML = list.map(x=>{
+      const st = J.slotStats(db, x.iso);
+      const dot = st.dups.length?'bg-red-600':(st.empty===0?'bg-green-600':'bg-orange-500');
+      const sub = st.dups.length?('Double: '+st.dups.slice(0,2).join(', ')):(st.empty===0?'Penuh ✓':st.empty+' kosong');
+      return `<a href="jadual.html?iso=${x.iso}" class="flex items-center gap-3 rounded-lg border border-border p-3">
+        <span class="dot ${dot}"></span>
+        <span class="flex-1"><span class="block text-sm font-bold">Sabat ${x.sabat} — ${x.label}</span>
+        <span class="font-mono text-[11px] text-muted-foreground">${st.filled}/${st.total} · ${sub}</span></span>
+        <span class="text-xs font-bold text-primary">Buka →</span></a>`;
+    }).join('');
+  }
+  main().catch(e=>{ document.getElementById('heroTitle').textContent='Gagal muat: '+e.message; });
 })();
 </script>
 </body>

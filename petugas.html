@@ -35,7 +35,7 @@
     <input id="aNama" class="mt-1 w-full rounded-md border border-border bg-card px-2.5 py-2 text-sm" placeholder="EN. NAMA BARU" />
     <div class="mt-2 grid grid-cols-2 gap-2">
       <div><label class="block text-xs font-semibold">Jabatan</label><input id="aJab" class="mt-1 w-full rounded-md border border-border bg-card px-2.5 py-2 text-sm" placeholder="—" /></div>
-      <div><label class="block text-xs font-semibold">Peranan (Pianist/Elder/Pastor, kosong=all)</label><input id="aPer" class="mt-1 w-full rounded-md border border-border bg-card px-2.5 py-2 text-sm" placeholder="" /></div>
+      <div><label class="block text-xs font-semibold">Peranan / Jawatan (Elder, Pastor, Music, Media…)</label><input id="aPer" class="mt-1 w-full rounded-md border border-border bg-card px-2.5 py-2 text-sm" placeholder="cth Elder" /></div>
     </div>
     <p id="aErr" class="mt-2 hidden text-xs font-semibold text-red-700"></p>
     <div class="mt-4 flex gap-2"><button id="aCancel" class="flex-1 rounded-md border border-border py-2 text-xs font-semibold">Batal</button><button id="aSave" class="flex-1 rounded-md bg-primary py-2 text-xs font-semibold text-white">Simpan</button></div>
@@ -45,7 +45,7 @@
 <nav class="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 backdrop-blur-md">
   <div class="mx-auto flex max-w-2xl items-center justify-around px-2 py-2">
     <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-muted-foreground" href="index.html"><iconify-icon icon="ph:house" width="20" height="20"></iconify-icon><span class="text-[11px] font-medium">Laman</span></a>
-    <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-muted-foreground" href="jadual.html"><iconify-icon icon="ph:calendar-blank" width="20" height="20"></iconify-icon><span class="text-[11px] font-medium">Jadual</span></a>
+    <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-muted-foreground" href="jadual.html"><iconify-icon icon="ph:calendar-blank" width="20" height="20"></iconify-icon><span class="text-[11px] font-medium">Isi</span></a>
     <a class="flex flex-1 flex-col items-center gap-1 rounded-md py-1.5 text-primary" href="petugas.html"><iconify-icon icon="ph:user-circle" width="20" height="20"></iconify-icon><span class="text-[11px] font-semibold">Petugas</span></a>
   </div>
 </nav>
@@ -63,10 +63,13 @@
   function render(){
     if(!DB) return;
     const s=(q.value||'').toUpperCase();
-    grid.innerHTML=DB.petugas.filter(p=>!s||p.nama.toUpperCase().includes(s)).map(p=>{
+    const mine=window.JadualApp.getMyName();
+    grid.innerHTML=DB.petugas.filter(p=>!s||p.nama.toUpperCase().includes(s)||(p.peranan||'').toUpperCase().includes(s)).map(p=>{
       const ini=p.nama.split(' ').map(w=>w[0]).slice(0,2).join('').replace('.','');
-      return `<div class="rounded-lg border border-border bg-card p-3.5"><div class="flex items-center gap-2"><div class="flex size-8 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white">${ini}</div><div><p class="text-sm font-semibold">${p.nama}</p><p class="font-mono text-[11px] text-muted-foreground">${p.peranan||'Semua peranan'} · ${p.aktif||'Y'}</p></div></div></div>`;
+      const isMe=mine&&window.JadualApp.norm(p.nama)===window.JadualApp.norm(mine);
+      return `<div class="rounded-lg border ${isMe?'border-primary ring-1 ring-primary':'border-border'} bg-card p-3.5"><div class="flex items-center gap-2"><div class="flex size-8 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white">${ini}</div><div class="flex-1"><p class="text-sm font-semibold">${p.nama}</p><p class="font-mono text-[11px] text-muted-foreground">${p.peranan||'—'} · ${p.aktif||'Y'}${isMe?' · ✓ Saya':''}</p></div><button data-n="${p.nama.replace(/"/g,'&quot;')}" class="iam rounded-md border border-border px-2 py-1 text-[11px] font-bold">Saya</button></div></div>`;
     }).join('');
+    grid.querySelectorAll('.iam').forEach(b=>b.onclick=()=>{ window.JadualApp.setMyName(b.dataset.n); render(); });
   }
   document.getElementById('aSave').onclick=async ()=>{
     const nama=document.getElementById('aNama').value.trim(), jab=document.getElementById('aJab').value.trim(), per=document.getElementById('aPer').value.trim();

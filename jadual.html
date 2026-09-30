@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Isi Roster — SDA Koporingan</title>
+<title>Isi / Semak — SDA Koporingan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -13,53 +13,74 @@
 @theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-secondary: var(--secondary); --color-secondary-foreground: var(--secondary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground); --color-card: var(--card); --color-border: var(--border); --color-destructive: var(--destructive); }
 :root { --background:#F1F5F9; --foreground:#172033; --primary:#1D4ED8; --primary-foreground:#fff; --secondary:#E2E8F0; --secondary-foreground:#334155; --muted:#CBD5E1; --muted-foreground:#64748B; --card:#F8FAFC; --border:#CBD5E1; --destructive:#DC2626; --radius:.5rem; --font-sans:"Inter"; --font-mono:"JetBrains Mono"; }
 *,*::before,*::after{scrollbar-width:none} *::-webkit-scrollbar{display:none}
-.card-dup { border-color: var(--destructive) !important; background: #FEF2F2 !important; }
-select.big { font-size: 16px; padding: 12px; } /* elak zoom iOS + senang tekan */
-@media print { nav, #topbar, #btnSaveWrap { display:none !important; } }
+.slotCard.mine { border: 2px solid var(--primary); background: #EFF6FF; }
+.slotCard.mine.empty { border-style: dashed; border-color: #F59E0B; background: #FFFBEB; animation: pulse 2s infinite; }
+.slotCard.done { border-color: #16A34A; }
+.slotCard.dup { border-color: var(--destructive) !important; background: #FEF2F2 !important; }
+.slotCard.other { opacity: .75; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.4)} 50%{box-shadow:0 0 0 4px rgba(245,158,11,.15)} }
+select.big { font-size: 16px; padding: 12px; }
+.deptBtn.sel { background: var(--primary); color: #fff; border-color: var(--primary); }
+.sabatBtn.sel { background: var(--primary); color: #fff; border-color: var(--primary); }
+@media print { nav, #modeBar, #isiWrap, #topSteps { display:none !important; } #semakWrap { display:block !important; } }
 </style>
 </head>
 <body>
-<div class="min-h-screen bg-background text-foreground pb-32 font-sans">
+<div class="min-h-screen bg-background text-foreground pb-36 font-sans">
 <header class="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur-md">
   <div class="mx-auto max-w-2xl px-4 py-3">
-    <h1 class="text-lg font-bold tracking-tight">Isi Roster</h1>
-    <p class="text-xs text-muted-foreground">Pilih Tarikh + Dept → isi slot anda → Simpan Sabat Ini</p>
-    <div class="mt-2 grid grid-cols-1 gap-2" id="topbar">
-      <label class="text-xs font-bold">1. Pilih Tarikh / Sabat
-        <select id="fTarikh" class="big mt-1 w-full rounded-lg border border-border bg-card font-semibold"></select>
-      </label>
-      <label class="text-xs font-bold">2. Pilih Dept Saya
-        <select id="fDept" class="big mt-1 w-full rounded-lg border border-border bg-card font-semibold"></select>
-      </label>
+    <h1 class="text-lg font-bold">Isi Roster</h1>
+    <div class="mt-2 inline-flex rounded-lg border border-border bg-card p-1" id="modeBar">
+      <button data-v="isi" class="modeBtn rounded-md bg-primary px-4 py-1.5 text-xs font-bold text-white">Isi</button>
+      <button data-v="semak" class="modeBtn rounded-md px-4 py-1.5 text-xs font-bold text-muted-foreground">Semak / PDF</button>
     </div>
   </div>
 </header>
 
-<main class="mx-auto max-w-2xl space-y-5 px-4 py-4">
-  <div id="dupBanner" class="hidden rounded-lg border border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-700"></div>
+<main class="mx-auto max-w-2xl space-y-4 px-4 py-4">
+  <div id="isiWrap" class="space-y-4">
+    <section id="topSteps" class="space-y-3">
+      <div class="rounded-xl border border-border bg-card p-3">
+        <p class="text-xs font-bold">Langkah 1 — Pilih Sabat</p>
+        <div id="sabatGrid" class="mt-2 grid grid-cols-2 gap-2"></div>
+      </div>
+      <div class="rounded-xl border border-border bg-card p-3">
+        <div class="flex items-center justify-between"><p class="text-xs font-bold">Langkah 2 — Pilih Dept Saya</p><span id="deptPct" class="font-mono text-[11px] font-bold text-primary"></span></div>
+        <div id="deptGrid" class="mt-2 grid grid-cols-2 gap-2"></div>
+        <label class="mt-2 flex items-center gap-2 text-xs"><input type="checkbox" id="showOthers" class="size-4" /> Tunjuk slot dept lain (read-only)</label>
+      </div>
+    </section>
 
-  <section>
-    <h2 class="mb-2 rounded-md bg-blue-700 px-3 py-2 text-sm font-bold text-white">Pagi 9.00–11.00</h2>
-    <div id="secPagi" class="space-y-3"></div>
-  </section>
-  <section>
-    <h2 class="mb-2 rounded-md bg-teal-700 px-3 py-2 text-sm font-bold text-white">Khotbah 11.00–12.30</h2>
-    <div id="secKhotbah" class="space-y-3"></div>
-  </section>
+    <div id="dupBanner" class="hidden rounded-lg border border-red-300 bg-red-50 p-3 text-sm font-bold text-red-700"></div>
 
-  <section class="rounded-lg border border-border bg-card p-3">
-    <h3 class="text-sm font-bold">Slot lain sudah diisi (tarikh ini)</h3>
-    <p class="text-xs text-muted-foreground">Rujukan supaya tidak pilih nama sama. R1: satu nama 1x per Tarikh.</p>
-    <div id="takenList" class="mt-2 flex flex-wrap gap-1.5"></div>
-  </section>
+    <section>
+      <p class="mb-2 text-xs font-bold">Langkah 3 — Isi slot <span class="text-muted-foreground">(Pagi dahulu, kemudian Khotbah)</span></p>
+      <h2 class="mb-2 rounded-md bg-blue-700 px-3 py-2 text-sm font-bold text-white">Pagi 9.00–11.00</h2>
+      <div id="secPagi" class="space-y-3"></div>
+    </section>
+    <section>
+      <h2 class="mb-2 rounded-md bg-teal-700 px-3 py-2 text-sm font-bold text-white">Khotbah 11.00–12.30</h2>
+      <div id="secKhotbah" class="space-y-3"></div>
+    </section>
+    <section class="rounded-xl border border-border bg-card p-3">
+      <h3 class="text-xs font-bold">Sudah diisi tarikh ini (R1 check)</h3>
+      <div id="takenList" class="mt-2 flex flex-wrap gap-1.5"></div>
+    </section>
+  </div>
 
-  <p class="text-center text-xs text-muted-foreground"><a href="jadual-pc.html" class="font-semibold text-primary underline">Buka paparan PC (jadual penuh)</a> · <a href="petugas.html" class="font-semibold text-primary underline">Tambah petugas baru</a></p>
+  <div id="semakWrap" style="display:none" class="space-y-3">
+    <div class="flex items-center gap-2">
+      <select id="semakIso" class="w-full rounded-lg border border-border bg-card px-3 py-3 text-base font-bold"></select>
+      <button id="btnPdf" class="rounded-lg border border-border bg-card px-4 py-3 text-xs font-bold">PDF</button>
+    </div>
+    <div id="semakBody"></div>
+  </div>
 </main>
 
-<div id="btnSaveWrap" class="fixed inset-x-0 bottom-16 z-30 px-4">
+<div id="saveWrap" class="fixed inset-x-0 bottom-16 z-30 px-4">
   <div class="mx-auto max-w-2xl">
-    <button id="btnSave" class="w-full rounded-xl bg-primary py-4 text-base font-bold text-white shadow-lg">Simpan Sabat Ini (<span id="chg">0</span> berubah)</button>
-    <p id="msg" class="mt-1 text-center text-xs font-semibold"></p>
+    <button id="btnSave" class="w-full rounded-xl bg-primary py-4 text-base font-bold text-white shadow-lg">Simpan Sabat Ini (<span id="chg">0</span>)</button>
+    <p id="msg" class="mt-1 text-center text-xs font-bold"></p>
   </div>
 </div>
 
@@ -71,7 +92,6 @@ select.big { font-size: 16px; padding: 12px; } /* elak zoom iOS + senang tekan *
   </div>
 </nav>
 
-<!-- Popup duplicate -->
 <div id="popDup" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-5">
   <div class="w-full max-w-sm rounded-xl bg-white p-5 text-center">
     <iconify-icon icon="ph:warning-circle-fill" width="40" height="40" class="text-red-600"></iconify-icon>
@@ -85,158 +105,174 @@ select.big { font-size: 16px; padding: 12px; } /* elak zoom iOS + senang tekan *
 <script src="assets/app.js"></script>
 <script>
 (function(){
-  let DB=null, people=[];
-  const perananOf=(nama)=>{ const p=people.find(x=>window.JadualApp.norm(x.nama)===window.JadualApp.norm(nama)); return p&&p.peranan?p.peranan:''; };
-  const optLabel=(nama)=>{ const r=perananOf(nama); return r?nama+' — '+r:nama; };
-  const fTarikh=document.getElementById('fTarikh'), fDept=document.getElementById('fDept');
-  const secPagi=document.getElementById('secPagi'), secKhot=document.getElementById('secKhotbah');
-  const takenList=document.getElementById('takenList'), dupBanner=document.getElementById('dupBanner');
-  const btnSave=document.getElementById('btnSave'), msg=document.getElementById('msg');
-  const pop=document.getElementById('popDup'), popMsg=document.getElementById('popMsg');
-  document.getElementById('popOk').onclick=()=>{pop.classList.add('hidden');pop.classList.remove('flex');};
+  const J = window.JadualApp;
+  const qs = new URLSearchParams(location.search);
+  let DB=null, people=[], iso='', dept='Sekolah Sabat', view=qs.get('view')||'isi', showOthers=false;
   const dirty=new Map();
-  const SKIP=['BULAN','TARIKH','SABAT','_rowIndex','_iso','_label'];
+  const perananOf=(n)=>{ const p=people.find(x=>J.norm(x.nama)===J.norm(n)); return p&&p.peranan?p.peranan:''; };
+  const optLabel=(n)=>{ const r=perananOf(n); return r?n+' — '+r:n; };
 
-  fTarikh.onchange=render; fDept.onchange=render;
-  btnSave.onclick=saveAll;
+  const sabatGrid=document.getElementById('sabatGrid'), deptGrid=document.getElementById('deptGrid');
+  const secPagi=document.getElementById('secPagi'), secKhot=document.getElementById('secKhotbah');
+  document.getElementById('popOk').onclick=()=>{const p=document.getElementById('popDup');p.classList.add('hidden');p.classList.remove('flex');};
+  document.getElementById('showOthers').onchange=(e)=>{ showOthers=e.target.checked; renderSlots(); };
 
-  function allowedCols(){
-    const d=fDept.value, map=(window.APP_CONFIG.DEPTS||{})[d];
-    return map||null; // null = semua
-  }
-  function roleCols(j){ return j.headers.filter(h=>!['BULAN','TARIKH','SABAT'].includes(h)); }
-
-  function showPop(nama, src){
-    popMsg.textContent = nama+' sudah bertugas di '+src+' pada tarikh ini. Sila pilih orang lain (R1).';
-    pop.classList.remove('hidden'); pop.classList.add('flex');
-  }
-
-  function takenMap(exceptEl){
-    // peta nama -> src untuk tarikh semasa (dari semua select semasa)
-    const m={};
-    document.querySelectorAll('select.slot').forEach(s=>{
-      const v=(s.value||'').trim(); if(!v) return;
-      if(exceptEl && s===exceptEl) return;
-      m[window.JadualApp.norm(v)] = s.dataset.label;
+  // mode toggle
+  document.querySelectorAll('.modeBtn').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+  function setView(v){
+    view=v;
+    document.querySelectorAll('.modeBtn').forEach(x=>{
+      const on=x.dataset.v===v;
+      x.className='modeBtn rounded-md px-4 py-1.5 text-xs font-bold '+(on?'bg-primary text-white':'text-muted-foreground');
     });
-    // + nilai asal read-only (tetap dikira)
+    document.getElementById('isiWrap').style.display=v==='isi'?'':'none';
+    document.getElementById('saveWrap').style.display=v==='isi'?'':'none';
+    document.getElementById('semakWrap').style.display=v==='semak'?'block':'none';
+    if(v==='semak') renderSemak();
+  }
+
+  function setIso(v){ iso=v; dirty.clear(); renderSteps(); renderSlots(); }
+  function setDept(v){ dept=v; dirty.clear(); renderSteps(); renderSlots(); }
+
+  function renderSteps(){
+    const list=J.sabatList(DB);
+    sabatGrid.innerHTML=list.map(x=>{
+      const st=J.slotStats(DB,x.iso);
+      const dot=st.dups.length?'🔴':(st.empty===0?'🟢':'🟠');
+      return `<button data-iso="${x.iso}" class="sabatBtn rounded-lg border border-border bg-white px-2 py-2 text-left ${x.iso===iso?'sel':''}">
+        <span class="block text-xs font-bold">${dot} Sabat ${x.sabat}</span>
+        <span class="font-mono text-[11px]">${x.label}</span>
+        <span class="block font-mono text-[10px] opacity-70">${st.filled}/${st.total}</span></button>`;
+    }).join('');
+    sabatGrid.querySelectorAll('.sabatBtn').forEach(b=>b.onclick=()=>setIso(b.dataset.iso));
+    const depts=Object.keys(window.APP_CONFIG.DEPTS||{});
+    deptGrid.innerHTML=depts.filter(d=>d!=='Semua').map(d=>{
+      const s=J.deptStats(DB,iso,(window.APP_CONFIG.DEPTS||{})[d]);
+      return `<button data-d="${d}" class="deptBtn rounded-lg border border-border bg-white px-2 py-2.5 text-left ${d===dept?'sel':''}">
+        <span class="block text-xs font-bold">${d}</span>
+        <span class="font-mono text-[11px]">${s.filled}/${s.total} ${s.empty?'· '+s.empty+' kosong':''}</span></button>`;
+    }).join('');
+    deptGrid.querySelectorAll('.deptBtn').forEach(b=>b.onclick=()=>setDept(b.dataset.d));
+    const cur=J.deptStats(DB,iso,(window.APP_CONFIG.DEPTS||{})[dept]);
+    document.getElementById('deptPct').textContent=dept+': '+cur.filled+'/'+cur.total;
+  }
+
+  function takenNow(except){
+    const m={};
+    document.querySelectorAll('select.slot').forEach(s=>{ const v=(s.value||'').trim(); if(!v||s===except) return; m[J.norm(v)]=s.dataset.label; });
     return m;
   }
-
-  function refreshState(changedEl, newVal){
-    // popup jika duplicate
-    if(changedEl && newVal){
-      const m=takenMap(changedEl);
-      if(m[window.JadualApp.norm(newVal)]){
-        showPop(newVal, m[window.JadualApp.norm(newVal)]);
-      }
-    }
-    // tandakan dup + banner + taken chips
-    const seen={}, dups=[];
+  function refreshState(changed, val){
+    if(changed&&val){ const m=takenNow(changed); if(m[J.norm(val)]){
+      document.getElementById('popMsg').textContent=val+' sudah bertugas di '+m[J.norm(val)]+' pada tarikh ini (R1).';
+      const p=document.getElementById('popDup'); p.classList.remove('hidden'); p.classList.add('flex'); } }
     const all=[];
+    document.querySelectorAll('select.slot').forEach(s=>{ const v=(s.value||'').trim(); if(v) all.push({el:s,key:J.norm(v),nama:v,label:s.dataset.label}); });
+    const cnt={}; all.forEach(x=>cnt[x.key]=(cnt[x.key]||0)+1);
+    document.querySelectorAll('.slotCard').forEach(c=>c.classList.remove('dup'));
+    all.forEach(x=>{ if(cnt[x.key]>1) x.el.closest('.slotCard').classList.add('dup'); });
+    const keys=new Set(all.map(x=>x.key));
     document.querySelectorAll('select.slot').forEach(s=>{
-      const v=(s.value||'').trim(); if(!v) return;
-      all.push({el:s, key:window.JadualApp.norm(v), nama:v, label:s.dataset.label});
+      const cur=J.norm(s.value||'');
+      [...s.options].forEach(o=>{ if(!o.value) return; const k=J.norm(o.value); const base=o.dataset.base||optLabel(o.value); o.dataset.base=base; o.textContent=(keys.has(k)&&k!==cur)?base+' ● Diambil':base; });
     });
-    all.forEach(x=>{ seen[x.key]=seen[x.key]||[]; seen[x.key].push(x); });
-    Object.values(seen).forEach(g=>{ if(g.length>1) g.forEach(x=>dups.push(x)); });
-    document.querySelectorAll('.slotCard').forEach(c=>c.classList.remove('card-dup'));
-    dups.forEach(d=>d.el.closest('.slotCard').classList.add('card-dup'));
-    // badge pada option yang sudah diambil (kekalkan label jawatan)
-    const takenKeys=new Set(all.map(x=>x.key));
-    document.querySelectorAll('select.slot').forEach(s=>{
-      const cur=window.JadualApp.norm(s.value||'');
-      [...s.options].forEach(o=>{
-        if(!o.value) return;
-        const k=window.JadualApp.norm(o.value);
-        const base=o.dataset.base||optLabel(o.value); o.dataset.base=base;
-        const used=takenKeys.has(k) && k!==cur;
-        o.textContent = used ? base+' ● Diambil' : base;
-      });
-    });
-    if(dups.length){
-      const names=[...new Set(dups.map(d=>d.nama))];
-      dupBanner.classList.remove('hidden');
-      dupBanner.textContent='Double (R1): '+names.slice(0,4).join(', ')+(names.length>4?' +lain':'')+' — betulkan sebelum Simpan.';
-    } else dupBanner.classList.add('hidden');
-    takenList.innerHTML = all.length ? all.map(x=>{ const r=perananOf(x.nama); return `<span class="rounded-full bg-secondary px-2 py-1 font-mono text-[11px]">${x.nama}${r?' · '+r:''} <span class="text-muted-foreground">· ${x.label}</span></span>`; }).join('') : '<span class="text-xs text-muted-foreground">Belum ada diisi.</span>';
+    const dups=all.filter(x=>cnt[x.key]>1);
+    const bn=document.getElementById('dupBanner');
+    if(dups.length){ const n=[...new Set(dups.map(d=>d.nama))]; bn.classList.remove('hidden'); bn.textContent='Double (R1): '+n.slice(0,4).join(', ')+' — betulkan sebelum Simpan.'; }
+    else bn.classList.add('hidden');
+    document.getElementById('takenList').innerHTML=all.length?all.map(x=>{const r=perananOf(x.nama);return `<span class="rounded-full bg-secondary px-2 py-1 font-mono text-[11px]">${x.nama}${r?' · '+r:''} <span class="text-muted-foreground">· ${x.label}</span></span>`;}).join(''):'<span class="text-xs text-muted-foreground">Belum ada diisi.</span>';
     document.getElementById('chg').textContent=dirty.size;
   }
 
-  function mkCard(sheet, rowObj, col, val, editable){
+  function mkCard(sheet,row,col,val,mine){
     const wrap=document.createElement('div');
-    wrap.className='slotCard rounded-lg border border-border bg-card p-3';
     const short=col.replace(/_/g,' ');
-    if(!editable){
-      wrap.innerHTML=`<p class="text-xs font-bold uppercase text-muted-foreground">${short}</p>
+    if(!mine){
+      if(!showOthers){ const d=document.createElement('div'); d.style.display='none'; return d; }
+      wrap.className='slotCard other rounded-lg border border-border bg-card p-3';
+      wrap.innerHTML=`<p class="text-[11px] font-bold uppercase text-muted-foreground">${short} <span class="ml-1 rounded bg-secondary px-1.5 py-0.5">dept lain</span></p>
         <p class="mt-1 text-sm font-semibold">${val||'<span class="text-orange-600">— Kosong —</span>'}</p>`;
       return wrap;
     }
-    wrap.innerHTML=`<label class="text-xs font-bold uppercase">${short}</label>`;
+    const empty=!val;
+    wrap.className='slotCard mine rounded-lg border border-border bg-card p-3'+(empty?' empty':' done');
+    wrap.innerHTML=`<label class="flex items-center gap-2 text-xs font-bold uppercase">${short}<span class="rounded bg-primary px-1.5 py-0.5 text-[10px] text-white">Dept Saya</span><span class="ml-auto">${empty?'🟠':'✅'}</span></label>`;
     const s=document.createElement('select');
     s.className='slot big mt-1 w-full rounded-lg border border-border bg-white font-semibold';
-    s.dataset.sheet=sheet; s.dataset.row=rowObj._rowIndex; s.dataset.col=col; s.dataset.iso=rowObj._iso; s.dataset.label=short; s.dataset.orig=val||'';
+    s.dataset.sheet=sheet; s.dataset.row=row._rowIndex; s.dataset.col=col; s.dataset.iso=row._iso; s.dataset.label=short; s.dataset.orig=val||'';
     s.innerHTML='<option value="">— Pilih —</option>'+people.map(p=>`<option ${p.nama===val?'selected':''} value="${p.nama.replace(/"/g,'&quot;')}" data-base="${optLabel(p.nama).replace(/"/g,'&quot;')}">${optLabel(p.nama)}</option>`).join('');
-    if(!rowObj._rowIndex){ s.disabled=true; }
+    if(!row._rowIndex) s.disabled=true;
     s.onchange=()=>{
       const key=s.dataset.sheet+'|'+s.dataset.row+'|'+s.dataset.col;
-      if(s.value===(s.dataset.orig||'')){ dirty.delete(key); }
+      if(s.value===(s.dataset.orig||'')) dirty.delete(key);
       else dirty.set(key,{sheet:s.dataset.sheet,row:parseInt(s.dataset.row,10),colName:s.dataset.col,value:s.value});
-      refreshState(s, s.value);
+      wrap.classList.toggle('empty',!s.value); wrap.classList.toggle('done',!!s.value);
+      refreshState(s,s.value);
     };
     wrap.appendChild(s);
     return wrap;
   }
 
-  function render(){
-    if(!DB) return;
+  function renderSlots(){
+    if(!DB||!iso) return;
     dirty.clear();
     secPagi.innerHTML=''; secKhot.innerHTML='';
-    const iso=fTarikh.value;
-    const rp=DB.pagi.rows.find(r=>r._iso===iso), rk=DB.khotbah.rows.find(r=>r._iso===iso);
-    const allow=allowedCols();
-    const isAllow=(c)=>!allow||allow.includes(c);
-    roleCols(DB.pagi).forEach(c=>secPagi.appendChild(mkCard(window.APP_CONFIG.SHEET_PAGI, rp||{_iso:iso}, c, (rp||{})[c]||'', isAllow(c))));
-    roleCols(DB.khotbah).forEach(c=>secKhot.appendChild(mkCard(window.APP_CONFIG.SHEET_KHOTBAH, rk||{_iso:iso}, c, (rk||{})[c]||'', isAllow(c))));
+    const rp=DB.pagi.rows.find(r=>r._iso===iso)||{_iso:iso}, rk=DB.khotbah.rows.find(r=>r._iso===iso)||{_iso:iso};
+    const allow=(window.APP_CONFIG.DEPTS||{})[dept];
+    const isMine=(c)=>!allow||allow.includes(c);
+    J.roleCols(DB.pagi).forEach(c=>secPagi.appendChild(mkCard(window.APP_CONFIG.SHEET_PAGI,rp,c,(rp[c]||''),isMine(c))));
+    J.roleCols(DB.khotbah).forEach(c=>secKhot.appendChild(mkCard(window.APP_CONFIG.SHEET_KHOTBAH,rk,c,(rk[c]||''),isMine(c))));
     refreshState();
+    // auto-scroll ke slot kosong pertama dept saya
+    const first=document.querySelector('.slotCard.mine.empty select');
+    if(first) first.scrollIntoView({block:'center',behavior:'smooth'});
   }
 
-  async function saveAll(){
-    if(!dirty.size){ msg.textContent='Tiada perubahan.'; return; }
-    // kira dup akhir
-    const seen={}, bad=[];
-    document.querySelectorAll('select.slot').forEach(s=>{
-      const v=(s.value||'').trim(); if(!v) return;
-      const k=window.JadualApp.norm(v);
-      if(seen[k]) bad.push(v); else seen[k]=1;
-    });
-    if(bad.length && !confirm('Double dikesan ('+[...new Set(bad)].join(', ')+'). Teruskan simpan?')) return;
+  document.getElementById('btnSave').onclick=async()=>{
+    if(!dirty.size){ const m=document.getElementById('msg'); m.textContent='Tiada perubahan.'; return; }
+    const seen={},bad=[];
+    document.querySelectorAll('select.slot').forEach(s=>{ const v=(s.value||'').trim(); if(!v) return; const k=J.norm(v); if(seen[k]) bad.push(v); else seen[k]=1; });
+    if(bad.length&&!confirm('Double dikesan ('+[...new Set(bad)].join(', ')+'). Teruskan?')) return;
     try{
-      btnSave.textContent='Menyimpan…'; msg.textContent=''; msg.className='mt-1 text-center text-xs font-semibold';
-      const updates=[...dirty.values()].map(d=>({sheet:d.sheet,row:d.row,colName:d.colName,value:d.value}));
-      await window.JadualApp.apiPost({action:'bulkUpdate', updates});
-      msg.textContent='Berjaya disimpan ('+updates.length+').'; msg.classList.add('text-green-700');
-      dirty.clear(); location.reload();
-    }catch(e){ msg.textContent=e.message; msg.classList.add('text-red-700'); }
-    finally{ btnSave.innerHTML='Simpan Sabat Ini (<span id="chg">'+dirty.size+'</span> berubah)'; }
+      document.getElementById('btnSave').textContent='Menyimpan…';
+      await J.apiPost({action:'bulkUpdate',updates:[...dirty.values()].map(d=>({sheet:d.sheet,row:d.row,colName:d.colName,value:d.value}))});
+      location.reload();
+    }catch(e){ document.getElementById('msg').textContent=e.message; document.getElementById('btnSave').innerHTML='Simpan Sabat Ini (<span id="chg">'+dirty.size+'</span>)'; }
+  };
+
+  function renderSemak(){
+    const sel=document.getElementById('semakIso');
+    if(!sel.options.length){
+      sel.innerHTML=J.sabatList(DB).map(x=>`<option value="${x.iso}" ${x.iso===iso?'selected':''}>Sabat ${x.sabat} — ${x.label}</option>`).join('');
+      sel.onchange=()=>{ iso=sel.value; renderSemakInner(); };
+    } else sel.value=iso;
+    renderSemakInner();
   }
+  function renderSemakInner(){
+    const rp=DB.pagi.rows.find(r=>r._iso===iso), rk=DB.khotbah.rows.find(r=>r._iso===iso);
+    const row=(label,val)=>`<div class="flex justify-between gap-2 border-b border-border py-1.5 text-sm"><span class="text-muted-foreground">${label}</span><span class="text-right font-semibold">${val||'<span class="text-orange-600">—</span>'}</span></div>`;
+    let h=`<div class="rounded-xl border border-border bg-card p-4"><h3 class="font-bold">Sabat — ${(rp||rk||{})._label||iso}</h3>`;
+    h+=`<h4 class="mt-3 rounded bg-blue-700 px-2 py-1 text-xs font-bold text-white">Pagi 9.00–11.00</h4>`;
+    J.roleCols(DB.pagi).forEach(c=>{ h+=row(c.replace(/_/g,' '),(rp||{})[c]||''); });
+    h+=`<h4 class="mt-3 rounded bg-teal-700 px-2 py-1 text-xs font-bold text-white">Khotbah 11.00–12.30</h4>`;
+    J.roleCols(DB.khotbah).forEach(c=>{ h+=row(c.replace(/_/g,' '),(rk||{})[c]||''); });
+    h+='</div>';
+    document.getElementById('semakBody').innerHTML=h;
+  }
+  document.getElementById('btnPdf').onclick=()=>{
+    const st=J.slotStats(DB,iso);
+    if(st.empty>0&&!confirm(st.empty+' slot kosong. Teruskan PDF?')) return;
+    setView('semak'); setTimeout(()=>window.print(),200);
+  };
 
   (async function(){
-    try{
-      DB=await window.JadualApp.loadDB();
-      people=DB.petugas.filter(p=>(p.aktif||'').toUpperCase()==='Y').map(p=>({nama:p.nama, peranan:(p.peranan||'').trim()})).sort((a,b)=>a.nama<b.nama?-1:1);
-      // tarikh options
-      const byIso={};
-      [...DB.pagi.rows, ...DB.khotbah.rows].forEach(r=>{ if(r._iso) byIso[r._iso]={iso:r._iso,label:r._label,sabat:r.SABAT}; });
-      const list=Object.values(byIso).sort((a,b)=>a.iso<b.iso?-1:1);
-      const today=new Date().toISOString().slice(0,10);
-      const def=(list.find(x=>x.iso>=today)||list[0]||{}).iso;
-      fTarikh.innerHTML=list.map(x=>`<option ${x.iso===def?'selected':''} value="${x.iso}">Sabat ${x.sabat||''} — ${x.label}</option>`).join('');
-      const depts=Object.keys(window.APP_CONFIG.DEPTS||{Semua:null});
-      fDept.innerHTML=depts.map(d=>`<option>${d}</option>`).join('');
-      render();
-    }catch(e){ msg.textContent='Gagal muat: '+e.message; }
-  })();
+    DB=await J.loadDB();
+    people=DB.petugas.filter(p=>(p.aktif||'').toUpperCase()==='Y').map(p=>({nama:p.nama,peranan:(p.peranan||'').trim()})).sort((a,b)=>a.nama<b.nama?-1:1);
+    const list=J.sabatList(DB);
+    iso=qs.get('iso')||(list.find(x=>x.iso>=new Date().toISOString().slice(0,10))||list[0]||{}).iso||'';
+    const dq=qs.get('dept'); if(dq&&((window.APP_CONFIG.DEPTS||{})[dq]||dq==='Semua')) dept=dq;
+    setView(view); renderSteps(); renderSlots(); renderSemak();
+  })().catch(e=>{ document.getElementById('msg').textContent='Gagal muat: '+e.message; });
 })();
 </script>
 </body>
